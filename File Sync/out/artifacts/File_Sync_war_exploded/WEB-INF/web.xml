@@ -14,12 +14,20 @@
         <url-pattern>/Demo1</url-pattern>
     </servlet-mapping>
 
+    <servlet>
+        <servlet-name>LoginServlet</servlet-name>
+        <servlet-class>servlet.LoginServlet</servlet-class>
+    </servlet>
+
+    <servlet-mapping>
+        <servlet-name>LoginServlet</servlet-name>
+        <url-pattern>/login</url-pattern>
+    </servlet-mapping>
+
     <context-param>
         <description>/home</description>
         <param-name>file-upload</param-name>
-        <param-value>
-            /home/tmp/
-        </param-value>
+        <param-value>/home/tmp/</param-value>
     </context-param>
 
 </web-app>

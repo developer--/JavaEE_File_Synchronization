@@ -1,5 +1,7 @@
 package servlet;
 
+import repository.manager.DBManager;
+
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -15,8 +17,6 @@ import java.sql.*;
 public class LoginServlet extends HttpServlet {
 
     private Connection connection;
-    private Statement statement;
-    private ResultSet resultSet;
     private HttpServletResponse resp;
 
     @Override
@@ -34,30 +34,14 @@ public class LoginServlet extends HttpServlet {
 
     private void readDataBase(final String userName, final String password){
         try {
-            Class.forName("org.apache.derby.jdbc.EmbeddedDriver");
-            connection = DriverManager.getConnection("jdbc:derby:drive;create=true");
-            statement = connection.createStatement();
-            createIfNotExist("ACCOUNTS");
-            resultSet = statement.executeQuery("SELECT * FROM ACCOUNTS");
-            boolean registered = false;
-            if (resultSet != null) {
-                while (resultSet.next()) {
-                    final String userNameDd = resultSet.getString("username");
-                    final String passwordDb = resultSet.getString("password");
-                    if (userNameDd.equals(userName) && passwordDb.equals(password)) {
-                        registered = true;
-                        break;
-                    } else {
-                        registered = false;
-                    }
-                }
-                if (registered){
-                    resp.getWriter().write("success");
-                }else {
-                    resp.getWriter().write("login failed");
-                }
-            } else {
-                resp.getWriter().write("database is empty");
+
+            connection = DBManager.getInstance().conectToDB();
+            boolean registered = DBManager.getInstance().checkIfCanLogin(userName,password);
+
+            if (registered){
+                resp.getWriter().write("success");
+            }else {
+                resp.getWriter().write("login failed");
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -76,19 +60,5 @@ public class LoginServlet extends HttpServlet {
                 }
         }
     }
-    private void createIfNotExist(final String tableName){
-        if (connection != null){
-            try {
-                DatabaseMetaData dbmd = connection.getMetaData();
-                ResultSet rs = dbmd.getTables(null,null,tableName.toUpperCase(),null);
-                if (!rs.next()){
-                    statement.executeUpdate("CREATE TABLE " + tableName + " (ID INT, username VARCHAR(15), password VARCHAR(20) )");
-                }
-                statement.execute("INSERT INTO " + tableName + " VALUES (1, '123','123')");
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
 
-        }
-    }
 }

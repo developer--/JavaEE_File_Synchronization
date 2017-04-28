@@ -12,5 +12,7 @@
   </head>
   <body>
   Jax-rs
+  <div style="width: 200px;height: 200px; margin: 30px; background: #78d87f">
+  </div>
   </body>
 </html>

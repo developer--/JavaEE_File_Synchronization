@@ -15,7 +15,7 @@ import java.io.IOException;
 @WebServlet("/upload")
 @MultipartConfig
 public class UploadServlet extends HttpServlet {
-    public static final String videoPath = "/root/Documents/videos/";
+    public static final String videoPath = "/root/glassfish4/glassfish/domains/domain1/docroot/files/videos/";
 
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         final Part part = (Part) request.getParts().toArray()[1];

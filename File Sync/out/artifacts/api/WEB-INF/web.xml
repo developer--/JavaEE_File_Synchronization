@@ -24,6 +24,26 @@
         <url-pattern>/login</url-pattern>
     </servlet-mapping>
 
+    <servlet>
+        <servlet-name>RegistrationServlet</servlet-name>
+        <servlet-class>servlet.RegistrationServlet</servlet-class>
+    </servlet>
+
+    <servlet-mapping>
+        <servlet-name>RegistrationServlet</servlet-name>
+        <url-pattern>/registration</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
+        <servlet-name>VideoPlaylistServlet</servlet-name>
+        <servlet-class>servlet.VideoPlaylistServlet</servlet-class>
+    </servlet>
+
+    <servlet-mapping>
+        <servlet-name>VideoPlaylistServlet</servlet-name>
+        <url-pattern>/videolist</url-pattern>
+    </servlet-mapping>
+
     <context-param>
         <description>/home</description>
         <param-name>file-upload</param-name>

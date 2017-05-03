@@ -27,6 +27,7 @@
            <label for="pwd">Password:</label>
            <input type="password" name="password" class="form-control" id="pwd">
        </div>
+       <input type="hidden" name="is_from_web" value="from web">
        <button type="submit" formmethod="post" class="btn btn-default">Sign in</button>
    </form>
 </div>

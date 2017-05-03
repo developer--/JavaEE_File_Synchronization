@@ -1,6 +1,7 @@
 package servlet;
 
 import manager.FileManager;
+import repository.manager.DBManager;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -16,22 +17,33 @@ import java.io.IOException;
 @WebServlet("/merge")
 public class MergingServlet extends HttpServlet{
 
+    static {
+        DBManager.getInstance().conectToDB();
+        DBManager.getInstance().createIfNotExist(DBManager.VIDEO_TABLE_NAME, DBManager.video_table_sql);
+    }
+
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        doGet(req,resp);
+        final String userName = req.getParameter("userName");
+        final String folderName = req.getParameter("folderName");
+        startMergingFiles(userName,folderName);
     }
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        final String folderName = req.getParameter("folderName");
-        startMergingFiles(folderName);
     }
 
-    private void startMergingFiles(final String folderName){
+    private void startMergingFiles(final String username, final String folderName){
         try {
             File[] files = new File(UploadServlet.videoPath + File.separator + folderName).listFiles();
             if (files != null && files.length > 0) {
-                FileManager.mergeFiles(UploadServlet.videoPath + File.separator + folderName + File.separator + files[0].getName(), UploadServlet.videoPath + File.separator + folderName + File.separator + System.currentTimeMillis() + ".mp4");
+                final String fullPath = UploadServlet.videoPath + File.separator + folderName + File.separator + files[0].getName();
+                final String fileName = String.valueOf(System.currentTimeMillis());
+                if (new File(fullPath).exists()) {
+                    FileManager.mergeFiles(fullPath,
+                            UploadServlet.videoPath + File.separator + folderName + File.separator + fileName + ".mp4");
+                    DBManager.getInstance().saveFile("", username, fullPath, folderName, fileName);
+                }
             }
         } catch (IOException e) {
             e.printStackTrace();

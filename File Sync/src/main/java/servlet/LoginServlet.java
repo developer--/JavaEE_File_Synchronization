@@ -7,17 +7,21 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.sql.*;
+import java.util.UUID;
 
 /**
  * Created by root on 4/27/17.
  */
-@WebServlet("/auth")
+@WebServlet
 public class LoginServlet extends HttpServlet {
 
     private Connection connection;
     private HttpServletResponse resp;
+    private HttpServletRequest request;
+    private String isFromWeb;
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
@@ -26,22 +30,32 @@ public class LoginServlet extends HttpServlet {
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        this.request = req;
         this.resp = resp;
         final String userName = req.getParameter("username");
         final String password = req.getParameter("password");
-        readDataBase(userName,password);
+        isFromWeb = req.getParameter("is_from_web");
+        login(userName,password);
     }
 
-    private void readDataBase(final String userName, final String password){
+    private void login(final String userName, final String password){
         try {
-
             connection = DBManager.getInstance().conectToDB();
             boolean registered = DBManager.getInstance().checkIfCanLogin(userName,password);
+            final String sessionId = UUID.randomUUID().toString();
 
             if (registered){
-                resp.getWriter().write("success");
+                DBManager.getInstance().updateSessionId(userName,sessionId);
+                if (isFromWeb != null) {
+//                    long userId = DBManager.getInstance().getUserId(userName);
+                    HttpSession session = request.getSession(true);
+                    session.setAttribute("userId",userName);
+                    resp.sendRedirect("/api/videolist");
+                }else {
+                    resp.getWriter().write("{\"success\":true,\"token\":"+"\""+sessionId+"\"}");
+                }
             }else {
-                resp.getWriter().write("login failed");
+                resp.getWriter().write("{\"success\":false,\"token\":"+"\""+" "+"\"}");
             }
         } catch (Exception e) {
             e.printStackTrace();

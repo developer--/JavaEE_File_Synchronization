@@ -1,4 +1,7 @@
-<%--
+<%@ page import="repository.manager.DBManager" %>
+<%@ page import="repository.models.User" %>
+<%@ page import="java.util.List" %>
+<%@ page import="java.io.PrintWriter" %><%--
   Created by IntelliJ IDEA.
   User: root
   Date: 4/24/17
@@ -8,11 +11,11 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <html>
   <head>
+    <link rel="stylesheet" type="text/css" href="style.css">
     <title>File Synchronization</title>
   </head>
   <body>
-  Jax-rs
-  <div style="width: 200px;height: 200px; margin: 30px; background: #78d87f">
-  </div>
+
+
   </body>
 </html>

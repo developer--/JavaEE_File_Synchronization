@@ -1,0 +1,23 @@
+table, th {
+    width: 90%;
+    align-content: center;
+    border-collapse: collapse;
+    border: 1px solid #459c08;
+}
+
+tr {
+    border: solid 1px black;
+}
+
+td{
+    width: 200px;
+    padding: 10px;
+    border-right: solid 1px black;
+}
+
+.center {
+    width: 20%;
+    margin: auto;
+    background-color: aquamarine;
+    text-align: center;
+}

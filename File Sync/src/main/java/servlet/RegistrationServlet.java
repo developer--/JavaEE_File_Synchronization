@@ -9,6 +9,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.UUID;
 
 /**
  * Created by root on 4/27/17.
@@ -18,7 +19,7 @@ public class RegistrationServlet extends HttpServlet {
 
     static {
         DBManager.getInstance().conectToDB();
-        DBManager.getInstance().createIfNotExist("TEST_TABLE");
+        DBManager.getInstance().createIfNotExist(DBManager.USER_TABLE_NAME, DBManager.users_table_sql);
     }
 
     @Override
@@ -36,8 +37,10 @@ public class RegistrationServlet extends HttpServlet {
         }else {
             if (password.equals(repeatPassword)) {
                 final User user = new User();
+                final String sessionId = UUID.randomUUID().toString();
                 user.setUserName(userName);
                 user.setPassword(password);
+                user.setSessionId(sessionId);
                 final boolean isRegistered = DBManager.getInstance().registerAccount(user);
                 resp.getWriter().write(isRegistered+"");
             }else {

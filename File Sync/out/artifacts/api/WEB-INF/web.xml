@@ -39,6 +39,16 @@
         <servlet-class>servlet.VideoPlaylistServlet</servlet-class>
     </servlet>
 
+    <servlet>
+        <servlet-name>AccountsTableServlet</servlet-name>
+        <servlet-class>servlet.AccountsTableServlet</servlet-class>
+    </servlet>
+
+    <servlet-mapping>
+        <servlet-name>AccountsTableServlet</servlet-name>
+        <url-pattern>/accounts</url-pattern>
+    </servlet-mapping>
+
     <servlet-mapping>
         <servlet-name>VideoPlaylistServlet</servlet-name>
         <url-pattern>/videolist</url-pattern>

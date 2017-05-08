@@ -39,10 +39,13 @@ public class UploadServlet extends HttpServlet {
                 new Thread(() -> {
                     byte[] buffer = new byte[1024 * 1024];
                     try {
-                        File dir = new File(videoPath + folderName);
-                        if (!dir.exists())
-                            dir.mkdir();
-                        File targetFile = new File(dir.getPath() + File.separator + part.getName());
+                        File userDir = new File(videoPath + userName.replace("\"",""));
+                        if (!userDir.exists())
+                            userDir.mkdir();
+                        File fileDir = new File(userDir.getPath() +File.separator + folderName);
+                        if (!fileDir.exists())
+                            fileDir.mkdir();
+                        File targetFile = new File(fileDir.getPath() + File.separator + part.getName());
                         try (BufferedInputStream bis = new BufferedInputStream(part.getInputStream())) {
                             int tmp;
                             while ((tmp = bis.read(buffer)) > 0) {

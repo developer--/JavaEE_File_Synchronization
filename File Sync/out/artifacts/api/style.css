@@ -21,3 +21,11 @@ td{
     background-color: aquamarine;
     text-align: center;
 }
+
+.video_div_class {
+    width: 200px;
+    height: 200px;
+    margin: 40px;
+    background-color: darkblue;
+    float: left;
+}

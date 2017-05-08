@@ -26,23 +26,37 @@ public class MergingServlet extends HttpServlet{
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         final String userName = req.getParameter("userName");
         final String folderName = req.getParameter("folderName");
-        startMergingFiles(userName,folderName);
+        final String mimeType = req.getParameter("mime_type");
+        startMergingFiles(userName,folderName,mimeType);
     }
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
     }
 
-    private void startMergingFiles(final String username, final String folderName){
+    private void startMergingFiles(final String username, final String folderName, final String mimeType){
         try {
-            File[] files = new File(UploadServlet.videoPath + File.separator + folderName).listFiles();
+            File[] files = new File(UploadServlet.videoPath + username + File.separator + folderName).listFiles();
             if (files != null && files.length > 0) {
-                final String fullPath = UploadServlet.videoPath + File.separator + folderName + File.separator + files[0].getName();
+                final String fullPath = UploadServlet.videoPath + username + File.separator + folderName + File.separator + files[0].getName();
                 final String fileName = String.valueOf(System.currentTimeMillis());
                 if (new File(fullPath).exists()) {
                     FileManager.mergeFiles(fullPath,
-                            UploadServlet.videoPath + File.separator + folderName + File.separator + fileName + ".mp4");
+                            UploadServlet.videoPath + username + File.separator + folderName + File.separator + fileName + mimeType);
                     DBManager.getInstance().saveFile("", username, fullPath, folderName, fileName);
+                }
+                final File folder = new File( UploadServlet.videoPath + username + File.separator + folderName);
+                if (folder.exists()){
+                    final File [] childs = folder.listFiles();
+                    if (childs != null && childs.length > 1){
+                        final File f1 = childs[0];
+                        final File f2 = childs[1];
+                        if (f1.length() >= f2.length()){
+                            f2.delete();
+                        }else {
+                            f1.delete();
+                        }
+                    }
                 }
             }
         } catch (IOException e) {

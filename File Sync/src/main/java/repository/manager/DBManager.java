@@ -3,10 +3,14 @@ package repository.manager;
 import org.jetbrains.annotations.Nullable;
 import repository.models.UploadedFileModel;
 import repository.models.User;
+import servlet.UploadServlet;
 
+import java.io.File;
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Created by root on 4/28/17.
@@ -20,7 +24,7 @@ public class DBManager {
 
     public static final String users_table_sql = "CREATE TABLE " + USER_TABLE_NAME +" (" +
             "  ID INTEGER NOT NULL PRIMARY KEY GENERATED ALWAYS AS IDENTITY ("+"START WITH 1, INCREMENT BY 1), username VARCHAR(15), password VARCHAR(100), session_id VARCHAR(100)" + ")";
-    public static final String video_table_sql = "CREATE TABLE " + VIDEO_TABLE_NAME + " ( ID INTEGER NOT NULL PRIMARY KEY GENERATED ALWAYS AS IDENTITY ( START WITH 1, INCREMENT BY 1 ), session_id VARCHAR(100), user_name VARCHAR(50), fullPath VARCHAR(300), fileName VARCHAR(100), folderName VARCHAR(200) )";
+    public static final String video_table_sql = "CREATE TABLE " + VIDEO_TABLE_NAME + " ( ID INTEGER NOT NULL PRIMARY KEY GENERATED ALWAYS AS IDENTITY ( START WITH 1, INCREMENT BY 1 ), session_id VARCHAR(100), 2 VARCHAR(50), fullPath VARCHAR(300), fileName VARCHAR(100), folderName VARCHAR(200) )";
 
 
     private DBManager(){}
@@ -114,6 +118,14 @@ public class DBManager {
     public boolean checkIfCanLogin(final String userName, final String password){
         ResultSet resultSet;
         try {
+            if (statement == null) {
+                if (connection != null && !connection.isClosed()) {
+                    statement = connection.createStatement();
+                } else {
+                    conectToDB();
+                    statement = connection.createStatement();
+                }
+            }
             resultSet = statement.executeQuery("SELECT * FROM " + USER_TABLE_NAME);
             boolean registered = false;
             if (resultSet != null) {
@@ -197,6 +209,7 @@ public class DBManager {
 
     public List<UploadedFileModel> getUploadidFiles(final String userName){
         final List<UploadedFileModel> files = new ArrayList<>();
+        List<UploadedFileModel> result = new ArrayList<>();
         try {
             if (connection.isClosed())
                 conectToDB();
@@ -210,17 +223,81 @@ public class DBManager {
                 prst.setString(1,userName);
                 ResultSet rst = prst.executeQuery();
                 while (rst.next()){
+                    final long videoId = rst.getInt("ID");
                     final String fileName = rst.getString("fileName");
                     final String folderName = rst.getString("folderName");
                     final String fullPath = rst.getString("fullPath");
-                    final UploadedFileModel model = new UploadedFileModel(fileName,"",fullPath,userName,folderName);
+                    final UploadedFileModel model = new UploadedFileModel(videoId,fileName,fullPath,userName,folderName);
                     files.add(model);
                 }
+                Set<String> titles = new HashSet<>();
+                for (final UploadedFileModel item : files){
+                    if (titles.add(item.getFolderName())){
+                        result.add(item);
+                    }
+                }
+
             } catch (SQLException e) {
                 e.printStackTrace();
             }
         }
-        return files;
+        return result;
+    }
+
+    public void deleteVideo(final long videoId){
+        try {
+            if (connection != null && connection.isClosed()){
+                conectToDB();
+            }
+            assert connection != null;
+            PreparedStatement prstFindFile = connection.prepareStatement("SELECT * FROM " + VIDEO_TABLE_NAME + " WHERE ID = ?");
+            prstFindFile.setLong(1,videoId);
+            ResultSet rest = prstFindFile.executeQuery();
+            while (rest.next()){
+                final String folderName = rest.getString("folderName");
+//                final String fileName = rest.getString("fileName");
+                final String userName = rest.getString("user_name");
+                final String deleteFilePath = UploadServlet.videoPath +userName + File.separator + folderName;
+                final File folder = new File(deleteFilePath);
+                if (folder.exists()){
+                    File[] entries = folder.listFiles();
+                    assert entries != null;
+                    for(File it : entries){
+                        if (it.exists()){
+                            it.delete();
+                        }
+                    }
+                    folder.delete();
+                    System.out.println(folder.getPath());
+
+                }else {
+                    System.out.println("file does not exist");
+                }
+            }
+
+            PreparedStatement prst = connection.prepareStatement("DELETE FROM " + VIDEO_TABLE_NAME + " WHERE ID = ?");
+            prst.setLong(1,videoId);
+            prst.execute();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public boolean changePassword(final String userName, final String newPassword){
+        try {
+            if (connection != null && !connection.isClosed()) {
+                final String updateSql = "UPDATE " + USER_TABLE_NAME + " SET password = ? WHERE username = ?";
+                PreparedStatement prst = connection.prepareStatement(updateSql);
+                prst.setString(1,newPassword);
+                prst.setString(2,userName);
+                prst.executeUpdate();
+                prst.close();
+                return true;
+            }
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return false;
     }
 
 }

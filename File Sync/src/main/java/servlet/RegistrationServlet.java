@@ -31,21 +31,18 @@ public class RegistrationServlet extends HttpServlet {
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         final String userName = req.getParameter("user_name");
         final String password = req.getParameter("password");
-        final String repeatPassword = req.getParameter("repeat_pass");
+//        final String repeatPassword = req.getParameter("repeat_pass");
+
         if (DBManager.getInstance().checkIfUserExist(userName)){
-            resp.getWriter().write("already exist");
+            resp.getWriter().write("{\"success\":false,\"errorMsg\":\"userName already registered\"}");
         }else {
-            if (password.equals(repeatPassword)) {
-                final User user = new User();
-                final String sessionId = UUID.randomUUID().toString();
-                user.setUserName(userName);
-                user.setPassword(password);
-                user.setSessionId(sessionId);
-                final boolean isRegistered = DBManager.getInstance().registerAccount(user);
-                resp.getWriter().write(isRegistered+"");
-            }else {
-                resp.getWriter().write("password does not matches");
-            }
+            final User user = new User();
+            final String sessionId = UUID.randomUUID().toString();
+            user.setUserName(userName);
+            user.setPassword(password);
+            user.setSessionId(sessionId);
+            final boolean isRegistered = DBManager.getInstance().registerAccount(user);
+            resp.getWriter().write("{\"success\":"+isRegistered+",\"errorMsg\":\"\"}");
         }
 
     }

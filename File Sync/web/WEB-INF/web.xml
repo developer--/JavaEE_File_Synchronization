@@ -34,10 +34,10 @@
         <url-pattern>/registration</url-pattern>
     </servlet-mapping>
 
-    <servlet>
-        <servlet-name>VideoPlaylistServlet</servlet-name>
-        <servlet-class>servlet.VideoPlaylistServlet</servlet-class>
-    </servlet>
+    <!--<servlet>-->
+        <!--<servlet-name>VideoPlaylistServlet</servlet-name>-->
+        <!--<servlet-class>servlet.VideoPlaylistServlet</servlet-class>-->
+    <!--</servlet>-->
 
     <servlet>
         <servlet-name>AccountsTableServlet</servlet-name>
@@ -49,10 +49,10 @@
         <url-pattern>/accounts</url-pattern>
     </servlet-mapping>
 
-    <servlet-mapping>
-        <servlet-name>VideoPlaylistServlet</servlet-name>
-        <url-pattern>/videolist</url-pattern>
-    </servlet-mapping>
+    <!--<servlet-mapping>-->
+        <!--<servlet-name>VideoPlaylistServlet</servlet-name>-->
+        <!--<url-pattern>/videolist</url-pattern>-->
+    <!--</servlet-mapping>-->
 
     <context-param>
         <description>/home</description>

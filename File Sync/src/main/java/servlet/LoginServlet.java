@@ -40,7 +40,8 @@ public class LoginServlet extends HttpServlet {
 
     private void login(final String userName, final String password){
         try {
-            connection = DBManager.getInstance().conectToDB();
+            if (connection != null && connection.isClosed())
+                connection = DBManager.getInstance().conectToDB();
             boolean registered = DBManager.getInstance().checkIfCanLogin(userName,password);
             final String sessionId = UUID.randomUUID().toString();
 
@@ -50,7 +51,9 @@ public class LoginServlet extends HttpServlet {
 //                    long userId = DBManager.getInstance().getUserId(userName);
                     HttpSession session = request.getSession(true);
                     session.setAttribute("userId",userName);
-                    resp.sendRedirect("/api/videolist");
+                    session.setAttribute("username",userName);
+                    session.setAttribute("password",password);
+                    resp.sendRedirect("/api/rest/videos");
                 }else {
                     resp.getWriter().write("{\"success\":true,\"token\":"+"\""+sessionId+"\"}");
                 }

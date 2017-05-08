@@ -36,7 +36,6 @@
       </element>
       <element id="library" level="application" name="bootstrap" />
       <element id="library" level="application" name="jquery" />
-      <element id="library" level="project" name="ejb-3.2" />
     </root>
   </artifact>
 </component>
